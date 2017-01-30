@@ -1,9 +1,9 @@
-%{!?_rel:%{expand:%%global _rel 0.1}}
+%{!?_rel:%{expand:%%global _rel 0.9}}
 
 Summary: Application and environment virtualization
 Name: singularity
 Version: @PACKAGE_VERSION@
-Release: %{_rel}%{?dist}
+Release: %{_rel}%{?dist}.ug
 # https://spdx.org/licenses/BSD-3-Clause-LBNL.html
 License: BSD-3-Clause-LBNL
 Group: System Environment/Base
@@ -11,6 +11,14 @@ URL: http://singularity.lbl.gov/
 Source: %{name}-%{version}.tar.gz
 ExclusiveOS: linux
 BuildRoot: %{?_tmppath}%{!?_tmppath:/var/tmp}/%{name}-%{version}-%{release}-root
+
+# Required by init script to detect real paths
+Requires: coreutils
+Requires(pre): /usr/sbin/groupadd, /usr/bin/getent
+Requires(postun): /usr/sbin/groupdel
+
+# Set vsc gsingularity group id
+%define gsingularityid 2640213
 
 %description
 Singularity provides functionality to build the smallest most minimal
@@ -27,11 +35,20 @@ Development files for Singularity
 %prep
 %setup
 
-
 %build
 %configure 
 %{__make} %{?mflags}
 
+# Add system singularity group
+%pre
+/usr/bin/getent group singularity || /usr/sbin/groupadd -r singularity
+
+%post
+/usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/sexec-suid
+/usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/sexec
+
+%postun
+/usr/sbin/groupdel singularity
 
 %install
 %{__make} install DESTDIR=$RPM_BUILD_ROOT %{?mflags_install}
@@ -48,7 +65,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755, root, root) %dir %{_sysconfdir}/singularity
 %attr(0644, root, root) %config(noreplace) %{_sysconfdir}/singularity/*
 %dir %{_libexecdir}/singularity
-%attr(4755, root, root) %{_libexecdir}/singularity/sexec-suid
+%attr(4750, root, root) %{_libexecdir}/singularity/sexec-suid
+%attr(0750, root, root) %{_libexecdir}/singularity/sexec
 %{_libexecdir}/singularity/bootstrap
 %{_libexecdir}/singularity/cli
 %{_libexecdir}/singularity/helpers
