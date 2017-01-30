@@ -30,6 +30,8 @@
 %else
 %define slurm 0
 %endif
+=======
+%{!?_rel:%{expand:%%global _rel 0.2}}
 
 Summary: Application and environment virtualization
 Name: singularity
@@ -42,6 +44,7 @@ URL: http://singularity.lbl.gov/
 Source: %{name}-%{version}.tar.gz
 ExclusiveOS: linux
 BuildRoot: %{?_tmppath}%{!?_tmppath:/var/tmp}/%{name}-%{version}-%{release}-root
+Requires: coreutils
 
 # Required by init script to detect real paths
 Requires: coreutils
@@ -185,3 +188,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 
+=======
+* Mon 30 Jan 2017 release 0.2
+- Update UGent spec 
