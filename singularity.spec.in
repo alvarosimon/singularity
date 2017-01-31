@@ -44,7 +44,11 @@ URL: http://singularity.lbl.gov/
 Source: %{name}-%{version}.tar.gz
 ExclusiveOS: linux
 BuildRoot: %{?_tmppath}%{!?_tmppath:/var/tmp}/%{name}-%{version}-%{release}-root
+
+# Required by init script to detect real paths
 Requires: coreutils
+Requires(pre): /usr/sbin/groupadd, /usr/bin/getent
+Requires(postun): /usr/sbin/groupdel
 
 # Required by init script to detect real paths
 Requires: coreutils
@@ -114,6 +118,11 @@ fi
 /usr/bin/chmod u+s root:%{gsingularityid} %{_libexecdir}/singularity/bin/export-suid
 /usr/bin/chmod u+s root:%{gsingularityid} %{_libexecdir}/singularity/bin/import-suid
 /usr/bin/chmod u+s root:%{gsingularityid} %{_libexecdir}/singularity/bin/mount-suid
+%pre
+/usr/bin/getent group singularity || /usr/sbin/groupadd -r singularity
+
+%postun
+/usr/sbin/groupdel singularity
 
 %install
 %{__make} install DESTDIR=$RPM_BUILD_ROOT %{?mflags_install}
@@ -123,7 +132,7 @@ rm -f $RPM_BUILD_ROOT/%{_libdir}/singularity/lib*.la
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-
+# Change file permissions ot allow access to singularity group
 %files
 %defattr(-, root, root)
 %doc examples AUTHORS.md CONTRIBUTING.md COPYRIGHT.md INSTALL.md LICENSE-LBNL.md LICENSE.md README.md
@@ -135,6 +144,24 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_localstatedir}/singularity/mnt/container
 %dir %{_localstatedir}/singularity/mnt/overlay
 
+%defattr(-, root, singularity)
+%doc examples AUTHORS COPYING ChangeLog INSTALL NEWS README.md
+%attr(0750, root, singularity) %dir %{_sysconfdir}/singularity
+%attr(0644, root, singularity) %config(noreplace) %{_sysconfdir}/singularity/*
+%dir %{_libexecdir}/singularity
+%attr(4750, root, singularity) %{_libexecdir}/singularity/sexec-suid
+%{_libexecdir}/singularity/bootstrap
+%{_libexecdir}/singularity/cli
+%{_libexecdir}/singularity/helpers
+%{_libexecdir}/singularity/python
+%{_libexecdir}/singularity/get-section
+%{_libexecdir}/singularity/image-handler.sh
+%{_libexecdir}/singularity/sexec
+%{_libexecdir}/singularity/functions
+%{_libexecdir}/singularity/image-bind
+%{_libexecdir}/singularity/image-create
+%{_libexecdir}/singularity/image-expand
+%{_libexecdir}/singularity/image-mount
 %{_bindir}/singularity
 %{_bindir}/run-singularity
 %{_mandir}/man1/*
