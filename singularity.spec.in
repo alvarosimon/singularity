@@ -1,4 +1,4 @@
-%{!?_rel:%{expand:%%global _rel 0.2}}
+%{!?_rel:%{expand:%%global _rel 0.3}}
 
 Summary: Application and environment virtualization
 Name: singularity
@@ -89,4 +89,6 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Mon 30 Jan 2017 release 0.2
 - Update UGent spec 
+* Tue 31 Jan 2017 release 0.3
+- Include image path restrictions
 

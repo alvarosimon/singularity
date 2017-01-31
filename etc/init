@@ -9,6 +9,16 @@ unset BASH_ENV
 # Some distributions don't have /bin and /sbin in PATH anymore
 PATH="$PATH:/bin:/sbin:/usr/bin:/usr/sbin"
 
+# UGent only allow images from user scratch directories
+IMAGE_PATH="$(realpath $SINGULARITY_IMAGE)"
+
+if [[ $IMAGE_PATH =~ .+/user/(home|data)/.+ ]]; then
+        echo "Sorry not valid path (..user/(home|data)/..) for image: $IMAGE_PATH"
+        exit
+    else
+        echo "Found correct path for image: $IMAGE_PATH"
+fi
+
 # Don't save the shell's HISTFILE
 HISTFILE="/dev/null"
 
