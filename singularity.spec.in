@@ -89,3 +89,4 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Mon 30 Jan 2017 release 0.2
 - Update UGent spec 
+
