@@ -25,14 +25,14 @@ SINGULARITY_VSC_GROUP="gsingularity"
 
 if [[ $IMAGE_PATH =~ .+/user/(home|data)/.+ ]]; then
     echo "ERROR: found invalid path (../user/(home|data)/..) in $IMAGE_PATH" >&2
-    exit
+    exit 1
 fi
 
 if id -nG "$USER" | grep -qw "$SINGULARITY_VSC_GROUP"; then
     echo "$USER belongs to $SINGULARITY_VSC_GROUP"
 else
     echo "ERROR: $USER does not belong to $SINGULARITY_VSC_GROUP" >&2
-    exit
+    exit 2
 fi
 
 
