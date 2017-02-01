@@ -84,3 +84,5 @@ rm -rf $RPM_BUILD_ROOT
 - Update UGent spec 
 * Tue 31 Jan 2017 release 0.3
 - Include image path & group restrictions
+* Wed 01 Feb 2017 release 0.4
+- Fix user group check
