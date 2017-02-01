@@ -9,15 +9,35 @@ unset BASH_ENV
 # Some distributions don't have /bin and /sbin in PATH anymore
 PATH="$PATH:/bin:/sbin:/usr/bin:/usr/sbin"
 
+# $SINGULARITY_IMAGE is not available in vanilla Singularity 2.2,
+# requires backporting a change that will be included in future release;
+# so, make very sure $SINGULARITY_IMAGE is defined
+if [ -z ${SINGULARITY_IMAGE+x} ]; then
+    echo "ERROR: \$SINGULARITY_IMAGE is not defined" >&2
+    exit 1
+fi
+
 # UGent only allow images from user scratch directories
+# and VSC singularity group users
 IMAGE_PATH="$(realpath $SINGULARITY_IMAGE)"
+SINGULARITY_VSC_GROUP="gsingularity"
+
 
 if [[ $IMAGE_PATH =~ .+/user/(home|data)/.+ ]]; then
-        echo "Sorry not valid path (..user/(home|data)/..) for image: $IMAGE_PATH"
-        exit
-    else
-        echo "Found correct path for image: $IMAGE_PATH"
+    echo "ERROR: found invalid path (../user/(home|data)/..) in $IMAGE_PATH" >&2
+    exit
 fi
+
+if id -nG "$USER" | grep -qw "$SINGULARITY_VSC_GROUP"; then
+    echo "$USER belongs to $SINGULARITY_VSC_GROUP"
+else
+    echo "ERROR: $USER does not belong to $SINGULARITY_VSC_GROUP" >&2
+    exit
+fi
+
+
+# Log user Singularity command for ELK
+logger -t singularity "user=$USER image=$IMAGE_PATH jobid=${PBS_JOBID:-} cmd=$SINGULARITY_COMMAND"
 
 # Don't save the shell's HISTFILE
 HISTFILE="/dev/null"
