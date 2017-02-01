@@ -28,7 +28,7 @@ if [[ $IMAGE_PATH =~ .+/user/(home|data)/.+ ]]; then
     exit 1
 fi
 
-if id -nG "$USER" | grep -qw "$SINGULARITY_VSC_GROUP"; then
+if id -nG | grep -qw "$SINGULARITY_VSC_GROUP"; then
     echo "$USER belongs to $SINGULARITY_VSC_GROUP"
 else
     echo "ERROR: $USER does not belong to $SINGULARITY_VSC_GROUP" >&2
