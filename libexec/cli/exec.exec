@@ -34,14 +34,6 @@ else
     exit 1
 fi
 
-## Init Singularity environment
-if [ -f "$SINGULARITY_sysconfdir/singularity/init" ]; then
-    . "$SINGULARITY_sysconfdir/singularity/init"
-fi
-if [ -f "${HOME:-}/.singularity-init" ]; then
-    . "${HOME:-}/.singularity-init"
-fi
-
 while true; do
     case ${1:-} in
         -h|--help|help)
@@ -140,6 +132,13 @@ if [ -z "${SINGULARITY_IMAGE:-}" ]; then
     exit 0
 fi
 
+## Init Singularity environment
+if [ -f "$SINGULARITY_sysconfdir/singularity/init" ]; then
+    . "$SINGULARITY_sysconfdir/singularity/init"
+fi
+if [ -f "${HOME:-}/.singularity-init" ]; then
+    . "${HOME:-}/.singularity-init"
+fi
 
 if [ -x "$SINGULARITY_libexecdir/singularity/image-handler.sh" ]; then
     . "$SINGULARITY_libexecdir/singularity/image-handler.sh"

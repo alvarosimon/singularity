@@ -1,9 +1,9 @@
-%{!?_rel:%{expand:%%global _rel 0.1}}
+%{!?_rel:%{expand:%%global _rel 0.5}}
 
 Summary: Application and environment virtualization
 Name: singularity
 Version: @PACKAGE_VERSION@
-Release: %{_rel}%{?dist}
+Release: %{_rel}%{?dist}.ug
 # https://spdx.org/licenses/BSD-3-Clause-LBNL.html
 License: BSD-3-Clause-LBNL
 Group: System Environment/Base
@@ -11,6 +11,9 @@ URL: http://singularity.lbl.gov/
 Source: %{name}-%{version}.tar.gz
 ExclusiveOS: linux
 BuildRoot: %{?_tmppath}%{!?_tmppath:/var/tmp}/%{name}-%{version}-%{release}-root
+
+# Required by init script to detect real paths
+Requires: coreutils
 
 %description
 Singularity provides functionality to build the smallest most minimal
@@ -77,3 +80,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Feb 02 2017 HPC-UGent <hpc@ugent.be> 0.5
+- Restrict access to docker/hub URLs
+* Wed Feb 01 2017 HPC-UGent <hpc@ugent.be> 0.4
+- Fix user group check
+* Tue Jan 31 2017 HPC-UGent <hpc@ugent.be> 0.3
+- Include image path & group restrictions
+* Mon Jan 30 2017 HPC-UGent <hpc@ugent.be> 0.2
+- Update UGent spec
