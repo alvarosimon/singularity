@@ -19,9 +19,13 @@ fi
 
 # UGent only allow images from user scratch directories
 # and VSC singularity group users
-IMAGE_PATH="$(realpath $SINGULARITY_IMAGE)"
+IMAGE_PATH="$(realpath $SINGULARITY_IMAGE 2> /dev/null)"
 SINGULARITY_VSC_GROUP="gsingularity"
 
+if [ -z "$IMAGE_PATH" ]; then
+    echo "ERROR: $SINGULARITY_IMAGE is not a valid image" >&2
+    exit 1
+fi
 
 if [[ $IMAGE_PATH =~ .+/user/(home|data)/.+ ]]; then
     echo "ERROR: found invalid path (../user/(home|data)/..) in $IMAGE_PATH" >&2
