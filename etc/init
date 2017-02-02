@@ -18,7 +18,9 @@ if [ -z ${SINGULARITY_IMAGE+x} ]; then
 fi
 
 # UGent only allow images from user scratch directories
-# and VSC singularity group users
+# and VSC singularity group users.
+# $IMAGE_PATH will be empty if realpath is not able to find
+# $SINGULARITY_IMAGE in the file system.
 IMAGE_PATH="$(realpath $SINGULARITY_IMAGE 2> /dev/null)"
 SINGULARITY_VSC_GROUP="gsingularity"
 
@@ -32,6 +34,7 @@ if [[ $IMAGE_PATH =~ .+/user/(home|data)/.+ ]]; then
     exit 1
 fi
 
+# Detect user groups and allow $SINGULARITY_VSC_GROUP
 if id -nG | grep -qw "$SINGULARITY_VSC_GROUP"; then
     echo "$USER belongs to $SINGULARITY_VSC_GROUP"
 else
