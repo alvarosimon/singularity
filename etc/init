@@ -29,8 +29,8 @@ if [ -z "$IMAGE_PATH" ]; then
     exit 1
 fi
 
-if [[ $IMAGE_PATH =~ .+/user/(home|data)/.+ ]]; then
-    echo "ERROR: found invalid path (../user/(home|data)/..) in $IMAGE_PATH" >&2
+if [[ $IMAGE_PATH =~ /apps/.+|.+/user/(home|data)/.+ ]]; then
+    echo "ERROR: found not allowed path in $IMAGE_PATH" >&2
     exit 1
 fi
 
