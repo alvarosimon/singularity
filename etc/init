@@ -29,7 +29,7 @@ if [ -z "$IMAGE_PATH" ]; then
     exit 1
 fi
 
-if [[ $IMAGE_PATH =~ /apps/.+|.+/user/(home|data)/.+ ]]; then
+if [[ $IMAGE_PATH =~ /vscmnt/.+_apps/.+|.+/user/(home|data)/.+ ]]; then
     echo "ERROR: found not allowed path in $IMAGE_PATH" >&2
     exit 1
 fi
