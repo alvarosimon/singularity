@@ -9,10 +9,14 @@ unset BASH_ENV
 # Some distributions don't have /bin and /sbin in PATH anymore
 PATH="$PATH:/bin:/sbin:/usr/bin:/usr/sbin"
 
+# Backup $PATH to check commands
+PATH_BACKUP="$PATH"
+unset PATH
+
 # $SINGULARITY_IMAGE is not available in vanilla Singularity 2.2,
 # requires backporting a change that will be included in future release;
 # so, make very sure $SINGULARITY_IMAGE is defined
-if [ -z ${SINGULARITY_IMAGE+x} ]; then
+if [ -z "${SINGULARITY_IMAGE+x}" ]; then
     echo "ERROR: \$SINGULARITY_IMAGE is not defined" >&2
     exit 1
 fi
@@ -21,7 +25,7 @@ fi
 # and VSC singularity group users.
 # $IMAGE_PATH will be empty if realpath is not able to find
 # $SINGULARITY_IMAGE in the file system.
-IMAGE_PATH="$(/usr/bin/realpath $SINGULARITY_IMAGE 2> /dev/null)"
+IMAGE_PATH="$(/usr/bin/realpath "$SINGULARITY_IMAGE" 2> /dev/null)"
 SINGULARITY_VSC_GROUP="gsingularity"
 
 if [ -z "$IMAGE_PATH" ]; then
@@ -35,7 +39,7 @@ if [[ $IMAGE_PATH =~ /vscmnt/.+_apps/.+|.+/user/(home|data)/.+ ]]; then
 fi
 
 # Detect user groups and allow $SINGULARITY_VSC_GROUP
-if /usr/bin/id -nG | grep -qw "$SINGULARITY_VSC_GROUP"; then
+if /usr/bin/id -nG | /usr/bin/grep -qw "$SINGULARITY_VSC_GROUP"; then
     echo "$USER belongs to $SINGULARITY_VSC_GROUP"
 else
     echo "ERROR: $USER does not belong to $SINGULARITY_VSC_GROUP" >&2
@@ -46,12 +50,15 @@ fi
 # Log user Singularity command for ELK
 /usr/bin/logger -t singularity "user=$USER image=$IMAGE_PATH jobid=${PBS_JOBID:-} cmd=$SINGULARITY_COMMAND"
 
+# Recover $PATH after command checks
+PATH="$PATH_BACKUP"
+
 # Don't save the shell's HISTFILE
 HISTFILE="/dev/null"
 
 # Set the timezone if it is not already set
 if [ -z "${TZ:-}" ]; then
-    TZ=`date +%Z`
+    TZ=$(/usr/bin/date +%Z)
 fi
 
 export PATH HISTFILE TZ

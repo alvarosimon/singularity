@@ -80,15 +80,3 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Feb 06 2017 HPC-UGent <hpc@ugent.be> 0.7
-- Restrict access to /vscmnt/_apps path
-* Fri Feb 03 2017 HPC-UGent <hpc@ugent.be> 0.6
-- Restrict access to /apps path
-* Thu Feb 02 2017 HPC-UGent <hpc@ugent.be> 0.5
-- Restrict access to docker/hub URLs
-* Wed Feb 01 2017 HPC-UGent <hpc@ugent.be> 0.4
-- Fix user group check
-* Tue Jan 31 2017 HPC-UGent <hpc@ugent.be> 0.3
-- Include image path & group restrictions
-* Mon Jan 30 2017 HPC-UGent <hpc@ugent.be> 0.2
-- Update UGent spec
