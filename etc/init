@@ -21,7 +21,7 @@ fi
 # and VSC singularity group users.
 # $IMAGE_PATH will be empty if realpath is not able to find
 # $SINGULARITY_IMAGE in the file system.
-IMAGE_PATH="$(realpath $SINGULARITY_IMAGE 2> /dev/null)"
+IMAGE_PATH="$(/usr/bin/realpath $SINGULARITY_IMAGE 2> /dev/null)"
 SINGULARITY_VSC_GROUP="gsingularity"
 
 if [ -z "$IMAGE_PATH" ]; then
@@ -35,7 +35,7 @@ if [[ $IMAGE_PATH =~ /vscmnt/.+_apps/.+|.+/user/(home|data)/.+ ]]; then
 fi
 
 # Detect user groups and allow $SINGULARITY_VSC_GROUP
-if id -nG | grep -qw "$SINGULARITY_VSC_GROUP"; then
+if /usr/bin/id -nG | grep -qw "$SINGULARITY_VSC_GROUP"; then
     echo "$USER belongs to $SINGULARITY_VSC_GROUP"
 else
     echo "ERROR: $USER does not belong to $SINGULARITY_VSC_GROUP" >&2
@@ -44,7 +44,7 @@ fi
 
 
 # Log user Singularity command for ELK
-logger -t singularity "user=$USER image=$IMAGE_PATH jobid=${PBS_JOBID:-} cmd=$SINGULARITY_COMMAND"
+/usr/bin/logger -t singularity "user=$USER image=$IMAGE_PATH jobid=${PBS_JOBID:-} cmd=$SINGULARITY_COMMAND"
 
 # Don't save the shell's HISTFILE
 HISTFILE="/dev/null"
