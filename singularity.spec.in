@@ -1,4 +1,4 @@
-%{!?_rel:%{expand:%%global _rel 0.8}}
+%{!?_rel:%{expand:%%global _rel 0.9}}
 
 Summary: Application and environment virtualization
 Name: singularity
@@ -17,6 +17,9 @@ Requires: coreutils
 Requires(pre): /usr/sbin/groupadd, /usr/bin/getent
 Requires(postun): /usr/sbin/groupdel
 
+# Set vsc gsingularity group id
+%define gsingularityid 2640213
+
 %description
 Singularity provides functionality to build the smallest most minimal
 possible containers, and running those containers as single application
@@ -32,13 +35,17 @@ Development files for Singularity
 %prep
 %setup
 
-
 %build
 %configure 
 %{__make} %{?mflags}
 
+# Add system singularity group
 %pre
 /usr/bin/getent group singularity || /usr/sbin/groupadd -r singularity
+
+%post
+/usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/sexec-suid
+/usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/sexec
 
 %postun
 /usr/sbin/groupdel singularity
@@ -53,13 +60,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %files
-%defattr(-, root, singularity)
+%defattr(-, root, root)
 %doc examples AUTHORS COPYING ChangeLog INSTALL NEWS README.md
-%attr(0755, root, singularity) %dir %{_sysconfdir}/singularity
-%attr(0644, root, singularity) %config(noreplace) %{_sysconfdir}/singularity/*
+%attr(0755, root, root) %dir %{_sysconfdir}/singularity
+%attr(0644, root, root) %config(noreplace) %{_sysconfdir}/singularity/*
 %dir %{_libexecdir}/singularity
-%attr(4750, root, singularity) %{_libexecdir}/singularity/sexec-suid
-%attr(0750, root, singularity) %{_libexecdir}/singularity/sexec
+%attr(4750, root, root) %{_libexecdir}/singularity/sexec-suid
+%attr(0750, root, root) %{_libexecdir}/singularity/sexec
 %{_libexecdir}/singularity/bootstrap
 %{_libexecdir}/singularity/cli
 %{_libexecdir}/singularity/helpers
