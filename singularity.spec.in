@@ -1,4 +1,4 @@
-%{!?_rel:%{expand:%%global _rel 0.9}}
+%{!?_rel:%{expand:%%global _rel 0.10}}
 
 Summary: Application and environment virtualization
 Name: singularity
@@ -14,8 +14,6 @@ BuildRoot: %{?_tmppath}%{!?_tmppath:/var/tmp}/%{name}-%{version}-%{release}-root
 
 # Required by init script to detect real paths
 Requires: coreutils
-Requires(pre): /usr/sbin/groupadd, /usr/bin/getent
-Requires(postun): /usr/sbin/groupdel
 
 # Set vsc gsingularity group id
 %define gsingularityid 2640213
@@ -39,16 +37,11 @@ Development files for Singularity
 %configure 
 %{__make} %{?mflags}
 
-# Add system singularity group
-%pre
-/usr/bin/getent group singularity || /usr/sbin/groupadd -r singularity
-
 %post
 /usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/sexec-suid
 /usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/sexec
+/usr/bin/chmod u+s %{_libexecdir}/singularity/sexec-suid
 
-%postun
-/usr/sbin/groupdel singularity
 
 %install
 %{__make} install DESTDIR=$RPM_BUILD_ROOT %{?mflags_install}
