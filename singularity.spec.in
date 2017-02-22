@@ -1,4 +1,4 @@
-%{!?_rel:%{expand:%%global _rel 0.10}}
+%{!?_rel:%{expand:%%global _rel 0.11}}
 
 Summary: Application and environment virtualization
 Name: singularity
