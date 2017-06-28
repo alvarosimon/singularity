@@ -21,3 +21,25 @@ fi
 SINGULARITYENV_HISTFILE=""
 
 export SINGULARITYENV_PATH SINGULARITYENV_HISTFILE
+
+# HPC-UGent only allows users in the 'gsingularity' group to use Singularity
+SINGULARITY_VSC_GROUP="gsingularity"
+
+# $IMAGE_PATH will be empty if realpath is not able to find
+# $SINGULARITY_IMAGE in the file system.
+IMAGE_PATH="$(/usr/bin/realpath "$SINGULARITY_IMAGE" 2> /dev/null)"
+if [ -z "$IMAGE_PATH" ]; then
+    echo "ERROR: $SINGULARITY_IMAGE is not a valid image" >&2
+    exit 1
+fi
+
+# Detect user groups and allow $SINGULARITY_VSC_GROUP
+if /usr/bin/id -nG | /usr/bin/grep -qw "$SINGULARITY_VSC_GROUP"; then
+    echo "$USER belongs to $SINGULARITY_VSC_GROUP"
+else
+    echo "ERROR: $USER does not belong to $SINGULARITY_VSC_GROUP" >&2
+    exit 2
+fi
+
+# Log user Singularity command for ELK
+/usr/bin/logger -t singularity "user=$USER image=$IMAGE_PATH jobid=${PBS_JOBID:-} cmd=$SINGULARITY_COMMAND"

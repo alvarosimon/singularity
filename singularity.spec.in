@@ -21,7 +21,7 @@
 # 
 
 
-%{!?_rel:%{expand:%%global _rel 0.1}}
+%{!?_rel:%{expand:%%global _rel 0.12}}
 
 # This allows us to pick up the default value from the configure
 %define with_slurm @with_slurm@
@@ -34,7 +34,7 @@
 Summary: Application and environment virtualization
 Name: singularity
 Version: @PACKAGE_VERSION@
-Release: %{_rel}%{?dist}
+Release: %{_rel}%{?dist}.ug
 # https://spdx.org/licenses/BSD-3-Clause-LBNL.html
 License: BSD-3-Clause-LBNL
 Group: System Environment/Base
@@ -42,6 +42,12 @@ URL: http://singularity.lbl.gov/
 Source: %{name}-%{version}.tar.gz
 ExclusiveOS: linux
 BuildRoot: %{?_tmppath}%{!?_tmppath:/var/tmp}/%{name}-%{version}-%{release}-root
+
+# Required by init script to detect real paths
+Requires: coreutils
+
+# Set vsc gsingularity group id
+%define gsingularityid 2640213
 
 %if %slurm
 # NOTE: doing a direct file dependency because experience has shown there are a few
@@ -92,6 +98,19 @@ fi
 
 %{__make} %{?mflags}
 
+%post
+/usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/bin/action-suid
+/usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/bin/create-suid
+/usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/bin/expand-suid
+/usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/bin/export-suid
+/usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/bin/import-suid
+/usr/bin/chown root:%{gsingularityid} %{_libexecdir}/singularity/bin/mount-suid
+/usr/bin/chmod u+s root:%{gsingularityid} %{_libexecdir}/singularity/bin/action-suid
+/usr/bin/chmod u+s root:%{gsingularityid} %{_libexecdir}/singularity/bin/create-suid
+/usr/bin/chmod u+s root:%{gsingularityid} %{_libexecdir}/singularity/bin/expand-suid
+/usr/bin/chmod u+s root:%{gsingularityid} %{_libexecdir}/singularity/bin/export-suid
+/usr/bin/chmod u+s root:%{gsingularityid} %{_libexecdir}/singularity/bin/import-suid
+/usr/bin/chmod u+s root:%{gsingularityid} %{_libexecdir}/singularity/bin/mount-suid
 
 %install
 %{__make} install DESTDIR=$RPM_BUILD_ROOT %{?mflags_install}
@@ -120,24 +139,24 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/bash_completion.d/singularity
 
 #SUID programs
-%attr(4755, root, root) %{_libexecdir}/singularity/bin/action-suid
-%attr(4755, root, root) %{_libexecdir}/singularity/bin/create-suid
-%attr(4755, root, root) %{_libexecdir}/singularity/bin/expand-suid
-%attr(4755, root, root) %{_libexecdir}/singularity/bin/export-suid
-%attr(4755, root, root) %{_libexecdir}/singularity/bin/import-suid
-%attr(4755, root, root) %{_libexecdir}/singularity/bin/mount-suid
+%attr(4750, root, root) %{_libexecdir}/singularity/bin/action-suid
+%attr(4750, root, root) %{_libexecdir}/singularity/bin/create-suid
+%attr(4750, root, root) %{_libexecdir}/singularity/bin/expand-suid
+%attr(4750, root, root) %{_libexecdir}/singularity/bin/export-suid
+%attr(4750, root, root) %{_libexecdir}/singularity/bin/import-suid
+%attr(4750, root, root) %{_libexecdir}/singularity/bin/mount-suid
 
 # Binaries
-%{_libexecdir}/singularity/bin/action
-%{_libexecdir}/singularity/bin/bootstrap
-%{_libexecdir}/singularity/bin/copy
-%{_libexecdir}/singularity/bin/cleanupd
-%{_libexecdir}/singularity/bin/create
-%{_libexecdir}/singularity/bin/expand
-%{_libexecdir}/singularity/bin/export
-%{_libexecdir}/singularity/bin/get-section
-%{_libexecdir}/singularity/bin/import
-%{_libexecdir}/singularity/bin/mount
+%attr(0750, root, root) %{_libexecdir}/singularity/bin/action
+%attr(0750, root, root) %{_libexecdir}/singularity/bin/bootstrap
+%attr(0750, root, root) %{_libexecdir}/singularity/bin/copy
+%attr(0750, root, root) %{_libexecdir}/singularity/bin/cleanupd
+%attr(0750, root, root) %{_libexecdir}/singularity/bin/create
+%attr(0750, root, root) %{_libexecdir}/singularity/bin/expand
+%attr(0750, root, root) %{_libexecdir}/singularity/bin/export
+%attr(0750, root, root) %{_libexecdir}/singularity/bin/get-section
+%attr(0750, root, root) %{_libexecdir}/singularity/bin/import
+%attr(0750, root, root) %{_libexecdir}/singularity/bin/mount
 
 # Scripts
 %{_libexecdir}/singularity/functions
